@@ -1,26 +1,39 @@
 class Solution {
     public int maximalRectangle(char[][] matrix) {
-        int m = matrix.length, n = matrix[0].length;
-        int[] h = new int[n];
+        int n = matrix[0].length;
+        int[] heights = new int[n];
         int ans = 0;
 
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++)
-                h[j] = matrix[i][j] == '1' ? h[j] + 1 : 0;
+        for (char[] row : matrix) {
 
-            Stack<Integer> st = new Stack<>();
-
-            for (int j = 0; j <= n; j++) {
-                int cur = j == n ? 0 : h[j];
-
-                while (!st.isEmpty() && h[st.peek()] > cur) {
-                    int height = h[st.pop()];
-                    int width = st.isEmpty() ? j : j - st.peek() - 1;
-                    ans = Math.max(ans, height * width);
-                }
-
-                st.push(j);
+            for (int i = 0; i < n; i++) {
+                if (row[i] == '1')
+                    heights[i]++;
+                else
+                    heights[i] = 0;
             }
+
+            ans = Math.max(ans, largestRectangle(heights));
+        }
+
+        return ans;
+    }
+
+    public int largestRectangle(int[] heights) {
+        int n = heights.length;
+        int ans = 0;
+        Stack<Integer> stack = new Stack<>();
+
+        for (int i = 0; i <= n; i++) {
+            int curr = (i == n) ? 0 : heights[i];
+
+            while (!stack.isEmpty() && heights[stack.peek()] > curr) {
+                int h = heights[stack.pop()];
+                int width = stack.isEmpty() ? i : i - stack.peek() - 1;
+                ans = Math.max(ans, h * width);
+            }
+
+            stack.push(i);
         }
 
         return ans;
